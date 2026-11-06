@@ -143,7 +143,7 @@
                     <div class="cv-info">
                         <div class="badge-tag">HUTECH IT • SYSTEM & EMBEDDED</div>
                         <h1 class="glow-title">Phan Dương Kỳ Thăng</h1>
-                        <p class="cv-title">Sinh viên năm 2 CNTT - Đại học Công nghệ TP.HCM (HUTECH)</p>
+                        <p class="cv-title">Sinh viên năm nhất CNTT - Đại học Công nghệ TP.HCM (HUTECH)</p>
                         
                         <div class="contact-grid">
                             <div class="contact-item">
@@ -178,9 +178,6 @@
                             <div class="exp-role">Cộng tác viên Tuyển sinh</div>
                             <div class="exp-place">Phòng Đào tạo - Đại học HUTECH</div>
                             <p class="exp-time">Có kinh nghiệm 3 tuần làm công tác tư vấn & tiếp nhận hồ sơ tuyển sinh sinh viên.</p>
-                            <div class="exp-role">Cộng tác viên</div>
-                            <div class="exp-place">Phòng Công tác sinh viên - Đại học Hutech</div>
-                            <p class="exp-time">nhân viên chính thức tư vấn hỗ trợ các vấn đề về giấy xác nhận hỗ trợ mua thẻ bảo hiểm y tế</p>
                         </div>
                     </div>
 
@@ -254,8 +251,18 @@
                     <div class="song-list-panel galaxy-card">
                         <div class="panel-header">
                             <span><i class="fa-solid fa-list-ul"></i> Danh Sách Phát</span>
-                            <span class="count-tag" id="songCountBadge">3 bài</span>
+                            <span class="count-tag" id="songCountBadge">9 bài</span>
                         </div>
+                        
+                        <!-- Thanh tìm kiếm bài hát phong cách Galaxy -->
+                        <div class="song-search-box">
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="songSearchInput" placeholder="Tìm kiếm bài hát, ca sĩ..." autocomplete="off">
+                            <button type="button" id="clearSearchBtn" class="clear-search-btn" title="Xóa tìm kiếm" style="display: none;">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
                         <div class="song-list" id="songList">
                             <!-- JavaScript tự động hiển thị danh sách bài hát -->
                         </div>
@@ -307,7 +314,7 @@
 
         <!-- FOOTER TINH THỂ VŨ TRỤ -->
         <footer class="galaxy-footer">
-            <p>© 2026 Phan Dương Kỳ Thăng • Designed with <i class="fa-solid fa-heart heart-glow"></i> in DeepSpace</p>
+            <p>© 2026 Phan Dương Kỳ Thăng • Designed with <i class="fa-solid fa-heart heart-glow"></i> in Deep Space</p>
         </footer>
     </div>
 
@@ -574,14 +581,14 @@
         }
 
         /* ========================================================
-           4. DỮ LIỆU & RENDER DANH SÁCH BÀI HÁT (PLAYLIST) VỚI FILE NHẠC & CHỮ CHẠY
+           4. DỮ LIỆU & RENDER DANH SÁCH BÀI HÁT (PLAYLIST) VỚI TÌM KIẾM THÔNG MINH
            ======================================================== */
         const songs = [
             {
                 id: 1,
                 title: "Liễu Thanh Yên - Jack (J97)",
-                // Đường dẫn file nhạc trong thư mục dự án (hoặc link mp3 online)
-                src: audio/"lieu-thanh-yen.mp3",
+                // Đường dẫn chuẩn chuỗi ký tự hợp lệ
+                src: "audio/lieu-thanh-yen.mp3",
                 lyrics: [
                     "Thương má em hồng, mình ngóng trong bóng đêm",
                     "Nước mắt lưng tròng, chờ mong day dứt thêm",
@@ -594,8 +601,19 @@
             },
             {
                 id: 2,
+                title: "Wrong Times - Dangrangto",
+                src: "audio/wrong_time.mp3",
+                lyrics: [
+                    "Yeah... Wrong times, wrong place...",
+                    "Gặp gỡ nhau sai thời điểm, ngỡ như một giấc mộng dài.",
+                    "Giữa thành phố không ngủ, ngắm nhìn ánh đèn xa mờ,",
+                    "Dẫu tiếc nuối nhưng lòng thanh thản bước tiếp con đường riêng."
+                ]
+            },
+            {
+                id: 3,
                 title: "Vũ Trụ Có Anh - Phương Mỹ Chi ft. DTAP",
-                src: "music/vu-tru-co-anh.mp3",
+                src: "audio/vu-tru-co-anh.mp3",
                 lyrics: [
                     "Ta bay qua muôn vì sao, tìm nhau giữa ngân hà xa xôi...",
                     "Gửi trọn tình này vào từng hạt bụi sao lấp lánh nơi chân trời.",
@@ -605,15 +623,70 @@
                 ]
             },
             {
-                id: 3,
+                id: 4,
                 title: "Phi Hành Gia Khắc Khoải - Sound of Cosmos",
-                src: "music/sound-of-cosmos.mp3",
+                src: "audio/sound-of-cosmos.mp3",
                 lyrics: [
                     "Giữa tĩnh mịch vô tận của vũ trụ...",
                     "Chỉ còn tiếng nhịp tim và giai điệu ký ức vang vọng.",
                     "Mỗi vì sao là một niềm hy vọng chưa bao giờ tắt.",
                     "Tín hiệu phát đi, hòa vào sóng không gian sâu thẳm...",
                     "Hành trình cô đơn nhưng tràn đầy khát vọng vươn tới tự do."
+                ]
+            },
+            {
+                id: 5,
+                title: "Cắt Đôi Nỗi Sầu - Tăng Duy Tân",
+                src: "audio/cat-doi-noi-sau.mp3",
+                lyrics: [
+                    "Cắt đôi nỗi sầu anh buông tay chấm dứt chuỗi ngày đau...",
+                    "Anh gom lại từng mảnh vỡ của một mối tình không trọn vẹn.",
+                    "Đêm nay một mình trong bóng tối tĩnh lặng,",
+                    "Để nỗi buồn tan vào hư không giữa vũ trụ bao la."
+                ]
+            },
+            {
+                id: 6,
+                title: "Ngân Hà Rực Rỡ - HIEUTHUHAI",
+                src: "audio/ngan-ha-ruc-ro.mp3",
+                lyrics: [
+                    "Lướt đi trong không gian muôn sắc màu rực rỡ,",
+                    "Đưa em đi qua muôn dải ngân hà xa xôi.",
+                    "Những ánh đèn thành phố như chòm sao lấp lánh,",
+                    "Giai điệu này viết riêng cho một đêm không ngủ."
+                ]
+            },
+            {
+                id: 7,
+                title: "Bật Tình Yêu Lên - Tăng Duy Tân ft. Hòa Minzy",
+                src: "audio/bat-tinh-yeu-len.mp3",
+                lyrics: [
+                    "Rót thêm chút ngọt ngào vào không gian êm đềm,",
+                    "Bật tình yêu lên cho màn đêm bừng sáng.",
+                    "Trái tim ta hòa chung một nhịp đập rộn ràng,",
+                    "Dưới bầu trời sao lấp lánh muôn ngàn điều ước."
+                ]
+            },
+            {
+                id: 8,
+                title: "Ngày Đầu Tiên - Đức Phúc",
+                src: "audio/ngay-dau-tien.mp3",
+                lyrics: [
+                    "Nhiều khi anh ngỡ như một giấc mơ,",
+                    "Ngày đầu tiên em đến mang theo ánh sáng nhiệm màu.",
+                    "Nguyện cùng em đi qua bao thăng trầm cuộc sống,",
+                    "Mãi bên nhau dẫu phong ba hay ngàn dặm cách xa."
+                ]
+            },
+            {
+                id: 9,
+                title: "Bên Trên Tầng Lầu - Tăng Duy Tân",
+                src: "audio/ben-tren-tang-lau.mp3",
+                lyrics: [
+                    "Em ơi đừng khóc bóng tối trước mắt sẽ bắt em đi...",
+                    "Em ơi đừng lo ngày mai sẽ tới mang theo nụ cười.",
+                    "Dưới ánh trăng tàn và những cơn gió lạnh lùng,",
+                    "Mọi muộn phiền rồi cũng sẽ trôi theo thời gian."
                 ]
             }
         ];
@@ -637,6 +710,8 @@
         const lyricsDisplay = document.getElementById('lyricsDisplay');
         const playingSongTitle = document.getElementById('playingSongTitle');
         const songCountBadge = document.getElementById('songCountBadge');
+        const songSearchInput = document.getElementById('songSearchInput');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
 
         // Định dạng thời gian mm:ss
         function formatTime(seconds) {
@@ -658,16 +733,16 @@
             // Cập nhật tiêu đề hiển thị (chữ chạy khi phát)
             playingSongTitle.innerText = song.title;
 
-            // Cập nhật giao diện danh sách Playlist bên trái
+            // Cập nhật giao diện danh sách Playlist bên trái qua data-index
             const items = document.querySelectorAll('.song-item');
-            items.forEach((item, idx) => {
-                if (idx === currentSongIndex) {
+            items.forEach((item) => {
+                const itemIdx = parseInt(item.dataset.index, 10);
+                const icon = item.querySelector('.play-icon');
+                if (itemIdx === currentSongIndex) {
                     item.classList.add('active-song');
-                    const icon = item.querySelector('.play-icon');
-                    if (icon) icon.className = shouldPlay ? 'fa-solid fa-pause play-icon' : 'fa-solid fa-play play-icon';
+                    if (icon) icon.className = (shouldPlay && !audio.paused) ? 'fa-solid fa-pause play-icon' : 'fa-solid fa-play play-icon';
                 } else {
                     item.classList.remove('active-song');
-                    const icon = item.querySelector('.play-icon');
                     if (icon) icon.className = 'fa-solid fa-play play-icon';
                 }
             });
@@ -694,7 +769,7 @@
             }
             if (audio.paused) {
                 audio.play().catch(err => {
-                    alert("Không thể phát file nhạc. Hãy đảm bảo bạn đã đặt file .mp3 vào thư mục dự án!");
+                    alert("Không thể phát file nhạc. Hãy đảm bảo bạn đã đặt file .mp3 vào đúng thư mục audio/ !");
                 });
             } else {
                 audio.pause();
@@ -719,8 +794,8 @@
             playerPanel.classList.add('is-playing');
             playlistBanner.classList.add('is-playing');
 
-            const activeItemIcon = document.querySelector('.active-song .play-icon');
-            if (activeItemIcon) activeItemIcon.className = 'fa-solid fa-pause play-icon';
+            const activeItem = document.querySelector(`.song-item[data-index="${currentSongIndex}"] .play-icon`);
+            if (activeItem) activeItem.className = 'fa-solid fa-pause play-icon';
         });
 
         // Xử lý sự kiện khi nhạc TẠM DỪNG -> DỪNG CHỮ VÀ SÓNG ÂM
@@ -729,8 +804,8 @@
             playerPanel.classList.remove('is-playing');
             playlistBanner.classList.remove('is-playing');
 
-            const activeItemIcon = document.querySelector('.active-song .play-icon');
-            if (activeItemIcon) activeItemIcon.className = 'fa-solid fa-play play-icon';
+            const activeItem = document.querySelector(`.song-item[data-index="${currentSongIndex}"] .play-icon`);
+            if (activeItem) activeItem.className = 'fa-solid fa-play play-icon';
         });
 
         // Cập nhật tiến trình & ĐỒNG BỘ CHỮ CHẠY/CUỘN THEO BÀI HÁT
@@ -799,41 +874,157 @@
             }
         });
 
-        // Render danh sách Playlist ban đầu
-        function renderSongs() {
-            songListContainer.innerHTML = '';
-            if (songCountBadge) songCountBadge.innerText = `${songs.length} bài`;
+        /* ========================================================
+           TÍNH NĂNG TÌM KIẾM BÀI HÁT THÔNG MINH (SEARCH ENGINE)
+           ======================================================== */
+        // Chuẩn hóa tiếng Việt bỏ dấu để tìm kiếm không dấu & có dấu đều chính xác
+        function removeVietnameseTones(str) {
+            if (!str) return "";
+            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+            str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+            str = str.replace(/đ/g, "d");
+            str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+            str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+            str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+            str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+            str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+            str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+            str = str.replace(/Đ/g, "D");
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+        }
 
-            songs.forEach((song, idx) => {
+        // Render danh sách các bài hát theo mảng
+        function renderSongsList(listItems, keyword = "") {
+            songListContainer.innerHTML = '';
+
+            if (listItems.length === 0) {
+                if (songCountBadge) songCountBadge.innerText = `0 / ${songs.length} bài`;
+                songListContainer.innerHTML = `
+                    <div class="no-results-state">
+                        <i class="fa-solid fa-satellite-dish"></i>
+                        <p class="no-res-title">Không tìm thấy bài hát</p>
+                        <span class="no-res-sub">Không có bài hát nào khớp với từ khóa "<strong>${escapeHtml(keyword)}</strong>"</span>
+                        <button type="button" class="clear-filter-btn" onclick="clearSongSearch()">
+                            <i class="fa-solid fa-rotate-left"></i> Xem tất cả bài hát
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            if (songCountBadge) {
+                if (keyword) {
+                    songCountBadge.innerText = `Tìm thấy ${listItems.length} / ${songs.length} bài`;
+                } else {
+                    songCountBadge.innerText = `${songs.length} bài`;
+                }
+            }
+
+            listItems.forEach(({ song, originalIdx }, displayIndex) => {
                 const div = document.createElement('div');
-                div.className = 'song-item' + (idx === 0 ? ' active-song' : '');
+                const isPlayingThis = (originalIdx === currentSongIndex);
+                div.className = 'song-item' + (isPlayingThis ? ' active-song' : '');
+                div.dataset.index = originalIdx;
+
+                const displayNum = (displayIndex + 1 < 10) ? `0${displayIndex + 1}` : `${displayIndex + 1}`;
+                const isPaused = audio.paused;
+                const iconClass = (isPlayingThis && !isPaused) ? 'fa-solid fa-pause play-icon' : 'fa-solid fa-play play-icon';
+
                 div.innerHTML = `
                     <div class="song-meta">
-                        <span class="track-number">0${idx + 1}</span>
+                        <span class="track-number">${displayNum}</span>
                         <div class="song-info">
-                            <span class="song-name">${song.title}</span>
+                            <span class="song-name">${highlightMatch(song.title, keyword)}</span>
                             <span class="song-sub">Stereo • Hi-Fi Cosmic</span>
                         </div>
                     </div>
-                    <i class="fa-solid fa-play play-icon"></i>
+                    <i class="${iconClass}"></i>
                 `;
                 
                 div.onclick = function() {
-                    if (currentSongIndex === idx) {
+                    if (currentSongIndex === originalIdx) {
                         togglePlay();
                     } else {
-                        loadSong(idx, true);
+                        loadSong(originalIdx, true);
                     }
                 };
                 
                 songListContainer.appendChild(div);
             });
+        }
 
-            // Nạp bài đầu tiên
+        // Làm nổi bật từ khóa tìm kiếm (Glow Highlight)
+        function highlightMatch(text, keyword) {
+            if (!keyword) return escapeHtml(text);
+            const safeKey = escapeRegex(keyword.trim());
+            const regex = new RegExp(`(${safeKey})`, 'gi');
+            return escapeHtml(text).replace(regex, '<span class="highlight-text">$1</span>');
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        function escapeRegex(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // Lọc bài hát theo từ khóa tìm kiếm
+        function filterSongs(keyword) {
+            const rawKey = keyword.trim();
+            const cleanKey = removeVietnameseTones(rawKey);
+
+            if (!cleanKey) {
+                if (clearSearchBtn) clearSearchBtn.style.display = 'none';
+                const allItems = songs.map((s, idx) => ({ song: s, originalIdx: idx }));
+                renderSongsList(allItems, "");
+                return;
+            }
+
+            if (clearSearchBtn) clearSearchBtn.style.display = 'flex';
+            const matches = [];
+            songs.forEach((s, idx) => {
+                const titleClean = removeVietnameseTones(s.title);
+                if (titleClean.includes(cleanKey)) {
+                    matches.push({ song: s, originalIdx: idx });
+                }
+            });
+
+            renderSongsList(matches, rawKey);
+        }
+
+        function clearSongSearch() {
+            if (songSearchInput) {
+                songSearchInput.value = '';
+                songSearchInput.focus();
+            }
+            filterSongs('');
+        }
+
+        if (songSearchInput) {
+            songSearchInput.addEventListener('input', (e) => {
+                filterSongs(e.target.value);
+            });
+        }
+
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', clearSongSearch);
+        }
+
+        // Khởi tạo hiển thị ban đầu
+        function initPlaylist() {
+            filterSongs('');
             loadSong(0, false);
         }
 
-        renderSongs();
+        initPlaylist();
 
         // Kiểm tra bảo mật ngay khi tải trang
         window.addEventListener('DOMContentLoaded', () => {
