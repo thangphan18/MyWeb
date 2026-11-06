@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phan Dương Kỳ Thăng - Galaxy Portfolio</title>
+    <!-- Google Fonts: Outfit & Orbitron mang đậm phong cách vũ trụ hiện đại -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="is-locked">
+
+    <!-- Canvas hạt thiên hà động (Stars & Nebula Dust) luôn chạy nền -->
+    <canvas id="galaxyCanvas"></canvas>
+    
+    <!-- Lớp phủ ánh sáng sương mù vũ trụ đa tầng (Deep Space Atmosphere) -->
+    <div class="nebula-overlay"></div>
+
+    <!-- ========================================================
+         CỔNG XÁC THỰC BẢO MẬT BẮT BUỘC (LOGIN GATEWAY OVERLAY)
+         Khi chưa đăng nhập, màn hình này sẽ hiện ra đầu tiên và chặn web
+         ======================================================== -->
+    <div id="cosmicGateScreen" class="gate-overlay">
+        <div class="galaxy-card gate-card">
+            <div class="portal-halo"></div>
+            
+            <div class="gate-security-badge">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>SECURITY LEVEL 1 • ACCESS RESTRICTED</span>
+            </div>
+
+            <div class="login-header">
+                <div class="portal-badge">
+                    <i class="fa-solid fa-user-lock"></i>
+                </div>
+                <h1 class="glow-title">YÊU CẦU ĐĂNG NHẬP</h1>
+                <p class="portal-sub">Hệ thống đang được khóa bảo vệ. Vui lòng đăng nhập tài khoản để vào website!</p>
+            </div>
+
+            <!-- Form đăng nhập -->
+            <form id="galaxyLoginForm" onsubmit="handleLoginSubmit(event)">
+                <!-- Hộp thông báo trạng thái -->
+                <div id="loginAlert" class="alert-box" style="display: none;"></div>
+
+                <!-- Trường Tên Đăng Nhập -->
+                <div class="input-group">
+                    <label for="usernameInput"><i class="fa-solid fa-user-astronaut"></i> Tên đăng nhập</label>
+                    <div class="input-field">
+                        <i class="fa-solid fa-user field-icon"></i>
+                        <input type="text" id="usernameInput" placeholder="Nhập tên tài khoản của bạn..." required autocomplete="username">
+                    </div>
+                </div>
+
+                <!-- Trường Mật Khẩu -->
+                <div class="input-group">
+                    <label for="passwordInput"><i class="fa-solid fa-lock"></i> Mật khẩu</label>
+                    <div class="input-field">
+                        <i class="fa-solid fa-key field-icon"></i>
+                        <input type="password" id="passwordInput" placeholder="Nhập mật khẩu truy cập..." required autocomplete="current-password">
+                        <button type="button" class="eye-toggle" onclick="togglePasswordVisibility()" title="Ẩn/Hiện mật khẩu">
+                            <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lựa chọn thêm -->
+                <div class="login-options">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="rememberMeCheckbox" checked>
+                        <span class="checkmark"></span>
+                        Ghi nhớ phiên đăng nhập
+                    </label>
+                    <a href="javascript:void(0)" onclick="autofillDemo()" class="forgot-link">
+                        <i class="fa-solid fa-bolt"></i> Tài khoản mẫu
+                    </a>
+                </div>
+
+                <!-- Nút kích hoạt mở cổng -->
+                <button type="submit" class="cosmic-submit-btn" id="loginBtn">
+                    <span class="btn-text">XÁC THỰC & MỞ KHÓA WEB</span>
+                    <span class="btn-flare"></span>
+                    <i class="fa-solid fa-door-open"></i>
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>Khách tham quan? Nhấn <a href="javascript:void(0)" onclick="autofillDemo()">vào đây</a> để tự động điền tài khoản thử nghiệm.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         TOÀN BỘ NỘI DUNG CHÍNH CỦA WEBSITE (CHỈ HIỂN THỊ SAU KHI ĐĂNG NHẬP)
+         ======================================================== -->
+    <div id="webAppMain" class="main-app-wrapper" style="display: none;">
+        
+        <!-- THANH ĐIỀU HƯỚNG VŨ TRỤ -->
+        <nav class="galaxy-nav">
+            <div class="nav-brand">
+                <span class="cosmic-icon"><i class="fa-solid fa-atom"></i></span>
+                <span class="brand-text">KỲ THĂNG <span class="brand-sub">COSMOS</span></span>
+            </div>
+
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="openTab(event, 'aboutMe')">
+                    <i class="fa-solid fa-user-astronaut"></i> Về Tôi
+                </button>
+                <button class="tab-btn" onclick="openTab(event, 'myPlaylist')">
+                    <i class="fa-solid fa-compact-disc"></i> Playlist
+                </button>
+            </div>
+
+            <div class="nav-right">
+                <!-- Thông tin người dùng đăng nhập -->
+                <div class="user-badge">
+                    <span class="avatar-mini"><i class="fa-solid fa-circle-user"></i></span>
+                    <span id="userNameDisplay">Chỉ Huy</span>
+                    <button class="logout-btn" onclick="handleLogout()" title="Đăng xuất và khóa web">
+                        <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- KHUNG CHÍNH CHỨA NỘI DUNG -->
+        <main class="container">
+            
+            <!-- ================= TRANG GIỚI THIỆU (VỀ TÔI) ================= -->
+            <section id="aboutMe" class="tab-content active">
+                <!-- Khung thông tin cá nhân dạng thẻ phi thuyền vũ trụ -->
+                <div class="cv-header galaxy-card">
+                    <div class="cv-image-wrapper">
+                        <div class="cosmic-ring"></div>
+                        <img src="anhbanthan.jpg" alt="Ảnh đại diện" class="cv-avatar">
+                        <div class="online-indicator" title="Đang trực tuyến"></div>
+                    </div>
+                    
+                    <div class="cv-info">
+                        <div class="badge-tag">HUTECH IT • SYSTEM & EMBEDDED</div>
+                        <h1 class="glow-title">Phan Dương Kỳ Thăng</h1>
+                        <p class="cv-title">Sinh viên năm nhất CNTT - Đại học Công nghệ TP.HCM (HUTECH)</p>
+                        
+                        <div class="contact-grid">
+                            <div class="contact-item">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>208/28 Lê Đức Thọ, P. An Nhơn, TP. Hồ Chí Minh</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fa-solid fa-phone-volume"></i>
+                                <span>+84 387 948 808</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fa-solid fa-envelope"></i>
+                                <span>Tky975344@gmail.com</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Về bản thân -->
+                <div class="galaxy-card section-card">
+                    <h2 class="section-title"><i class="fa-solid fa-terminal"></i> Về Bản Thân</h2>
+                    <p class="about-desc">
+                        Tôi đam mê hệ thống, quản trị máy chủ và kiến trúc mạng. Tôi luôn thích mày mò tối ưu hóa hiệu suất phần cứng và tìm hiểu sâu về cách các hệ thống giao tiếp với nhau. Tôi thường phát triển những trang web hiệu ứng 3D đẹp mắt và tìm hiểu nhiều phần mềm phục vụ chuyên sâu cho chuyên ngành của mình.
+                    </p>
+                </div>
+
+                <!-- Kinh nghiệm & Kỹ năng -->
+                <div class="two-cols-layout">
+                    <div class="galaxy-card section-card">
+                        <h2 class="section-title"><i class="fa-solid fa-briefcase"></i> Kinh Nghiệm</h2>
+                        <div class="exp-item">
+                            <div class="exp-role">Cộng tác viên Tuyển sinh</div>
+                            <div class="exp-place">Phòng Đào tạo - Đại học HUTECH</div>
+                            <p class="exp-time">Có kinh nghiệm 3 tuần làm công tác tư vấn & tiếp nhận hồ sơ tuyển sinh sinh viên.</p>
+                        </div>
+                    </div>
+
+                    <div class="galaxy-card section-card">
+                        <h2 class="section-title"><i class="fa-solid fa-microchip"></i> Kỹ Năng Kỹ Thuật</h2>
+                        <ul class="skills-list">
+                            <li><i class="fa-brands fa-c"></i> C / C++</li>
+                            <li><i class="fa-solid fa-server"></i> Nginx / Samba / Tomcat</li>
+                            <li><i class="fa-brands fa-html5"></i> HTML5 / CSS3 / JS</li>
+                            <li><i class="fa-solid fa-robot"></i> MicroPython & ESP32-S3</li>
+                            <li><i class="fa-solid fa-network-wired"></i> Giao tiếp Socket</li>
+                            <li><i class="fa-solid fa-file-code"></i> Soạn thảo LaTeX</li>
+                            <li><i class="fa-solid fa-wand-magic-sparkles"></i> 3D & CSS Animations</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Dự án tiêu biểu -->
+                <div class="galaxy-card section-card">
+                    <h2 class="section-title"><i class="fa-solid fa-diagram-project"></i> Dự Án Tiêu Biểu</h2>
+                    <div class="projects-grid">
+                        <div class="project-box">
+                            <div class="project-header">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <h3>Hạ Tầng Ảo Hóa VMware / VirtualBox</h3>
+                            </div>
+                            <p>Triển khai & quản lý môi trường ảo hóa kiến trúc đa máy chủ (Web, File, App server) phục vụ thử nghiệm độc lập. Tối ưu hóa tài nguyên mạng và cấu hình giao tiếp liên hệ điều hành Linux/Windows.</p>
+                        </div>
+
+                        <div class="project-box">
+                            <div class="project-header">
+                                <i class="fa-brands fa-git-alt"></i>
+                                <h3>Quản Lý Dự Án Với Git & GitHub</h3>
+                            </div>
+                            <p>Quản lý mã nguồn C/C++ và các kịch bản cấu hình hạ tầng mạng. Phối hợp nhóm hiệu quả, giải quyết conflict, quản lý phân nhánh (branching) chuyên nghiệp.</p>
+                        </div>
+
+                        <div class="project-box">
+                            <div class="project-header">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <h3>Hệ Thống Cảnh Báo An Ninh IoT</h3>
+                            </div>
+                            <p>Thiết kế hệ thống thiết bị chống trộm thông minh ứng dụng vi điều khiển ESP32-S3, tích hợp cụm cảm biến chuyển động và màn hình OLED hiển thị trạng thái thực.</p>
+                        </div>
+
+                        <div class="project-box">
+                            <div class="project-header">
+                                <i class="fa-solid fa-meteor"></i>
+                                <h3>Cosmic Galaxy Website & Playlist</h3>
+                            </div>
+                            <p>Website cá nhân tích hợp portfolio, hệ thống nghe nhạc trực tuyến và cơ chế đăng nhập phong cách thiên hà đen huyền ảo.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= TRANG NGHE NHẠC (PLAYLIST) ================= -->
+            <section id="myPlaylist" class="tab-content">
+                <div class="galaxy-card playlist-banner" id="playlistBanner">
+                    <div>
+                        <h2 class="glow-title"><i class="fa-solid fa-headphones-simple"></i> Galaxy Soundscape</h2>
+                        <p class="playlist-sub">Không gian âm nhạc thư giãn trong dải ngân hà. Chọn bài hát để thưởng thức lời ca.</p>
+                    </div>
+                    <div class="audio-waves" id="audioWaves">
+                        <span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+                
+                <div class="music-layout">
+                    <!-- Danh sách bài hát -->
+                    <div class="song-list-panel galaxy-card">
+                        <div class="panel-header">
+                            <span><i class="fa-solid fa-list-ul"></i> Danh Sách Phát</span>
+                            <span class="count-tag" id="songCountBadge">3 bài</span>
+                        </div>
+                        <div class="song-list" id="songList">
+                            <!-- JavaScript tự động hiển thị danh sách bài hát -->
+                        </div>
+                    </div>
+                    
+                    <!-- Khu vực phát nhạc & hiển thị lời bài hát -->
+                    <div class="lyrics-display-panel galaxy-card" id="playerPanel">
+                        <!-- Header hiển thị bài hát với hiệu ứng chữ chạy Marquee -->
+                        <div class="lyrics-header">
+                            <span class="music-note-icon"><i class="fa-solid fa-compact-disc" id="discIcon"></i></span>
+                            <div class="track-title-marquee-wrapper">
+                                <div id="playingSongTitle" class="current-track-name">Chưa chọn bài hát nào</div>
+                            </div>
+                        </div>
+
+                        <!-- Trình phát nhạc Audio Player phong cách Galaxy -->
+                        <div class="cosmic-player-box">
+                            <audio id="galaxyAudio"></audio>
+                            <div class="cosmic-controls">
+                                <button type="button" class="ctrl-btn" id="prevBtn" title="Bài trước"><i class="fa-solid fa-backward-step"></i></button>
+                                <button type="button" class="ctrl-btn play-btn" id="playBtn" title="Phát/Dừng"><i class="fa-solid fa-play" id="playIcon"></i></button>
+                                <button type="button" class="ctrl-btn" id="nextBtn" title="Bài tiếp"><i class="fa-solid fa-forward-step"></i></button>
+                                
+                                <span class="time-text" id="curTime">0:00</span>
+                                <div class="seek-bar-wrapper" id="seekBarWrapper">
+                                    <div class="seek-progress" id="seekProgress"></div>
+                                </div>
+                                <span class="time-text" id="durTime">0:00</span>
+
+                                <div class="volume-control">
+                                    <i class="fa-solid fa-volume-high" id="volIcon"></i>
+                                    <input type="range" id="volSlider" min="0" max="1" step="0.05" value="0.8">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Khung chữ chạy lời bài hát (Auto-scroll & highlight) -->
+                        <div class="lyrics-body" id="lyricsDisplay">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-circle-play"></i>
+                                <p>Vui lòng click vào một bài hát trong danh sách bên cạnh để bắt đầu nghe và xem lời.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER TINH THỂ VŨ TRỤ -->
+        <footer class="galaxy-footer">
+            <p>© 2026 Phan Dương Kỳ Thăng • Designed with <i class="fa-solid fa-heart heart-glow"></i> in Deep Space</p>
+        </footer>
+    </div>
+
+    <!-- JAVASCRIPT ĐIỀU KHIỂN HIỆU ỨNG THIÊN HÀ VÀ BẢO MẬT KHÓA WEB -->
+    <script>
+        /* ========================================================
+           1. CANVAS HIỆU ỨNG THIÊN HÀ (STARS & SHOOTING STARS)
+           ======================================================== */
+        const canvas = document.getElementById('galaxyCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        let shootingStars = [];
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initStars();
+        });
+
+        function initStars() {
+            stars = [];
+            const starCount = Math.floor((width * height) / 2800);
+            for (let i = 0; i < starCount; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 1.8 + 0.3,
+                    alpha: Math.random() * 0.8 + 0.2,
+                    speed: Math.random() * 0.02 + 0.005,
+                    hue: Math.random() > 0.8 ? 270 : (Math.random() > 0.5 ? 200 : 0)
+                });
+            }
+        }
+
+        function createShootingStar() {
+            if (shootingStars.length < 2 && Math.random() < 0.015) {
+                shootingStars.push({
+                    x: Math.random() * width * 0.8,
+                    y: Math.random() * height * 0.4,
+                    length: Math.random() * 80 + 40,
+                    speed: Math.random() * 7 + 4,
+                    angle: Math.PI / 4 + (Math.random() * 0.2 - 0.1),
+                    opacity: 1
+                });
+            }
+        }
+
+        function renderGalaxy() {
+            ctx.clearRect(0, 0, width, height);
+
+            for (let star of stars) {
+                star.alpha += star.speed;
+                if (star.alpha > 1 || star.alpha < 0.2) star.speed = -star.speed;
+
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                if (star.hue === 0) {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${Math.abs(star.alpha)})`;
+                } else {
+                    ctx.fillStyle = `hsla(${star.hue}, 80%, 75%, ${Math.abs(star.alpha)})`;
+                }
+                ctx.fill();
+            }
+
+            createShootingStar();
+            for (let i = shootingStars.length - 1; i >= 0; i--) {
+                const s = shootingStars[i];
+                const tailX = s.x - Math.cos(s.angle) * s.length;
+                const tailY = s.y - Math.sin(s.angle) * s.length;
+
+                const grad = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
+                grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+                grad.addColorStop(1, `rgba(180, 220, 255, ${s.opacity})`);
+
+                ctx.strokeStyle = grad;
+                ctx.lineWidth = 1.8;
+                ctx.beginPath();
+                ctx.moveTo(tailX, tailY);
+                ctx.lineTo(s.x, s.y);
+                ctx.stroke();
+
+                s.x += Math.cos(s.angle) * s.speed;
+                s.y += Math.sin(s.angle) * s.speed;
+                s.opacity -= 0.015;
+
+                if (s.opacity <= 0 || s.x > width || s.y > height) {
+                    shootingStars.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(renderGalaxy);
+        }
+
+        initStars();
+        renderGalaxy();
+
+        /* ========================================================
+           2. BẢO MẬT & XỬ LÝ KHÓA CỔNG ĐĂNG NHẬP (GATE SYSTEM)
+           ======================================================== */
+        const gateScreen = document.getElementById('cosmicGateScreen');
+        const webAppMain = document.getElementById('webAppMain');
+        const userNameDisplay = document.getElementById('userNameDisplay');
+
+        // Hàm kiểm tra trạng thái đăng nhập
+        function checkAuthStatus() {
+            // Dọn dẹp phiên thử nghiệm cũ nếu có để đảm bảo luôn yêu cầu đăng nhập lúc đầu
+            localStorage.removeItem('galaxySessionUser');
+            
+            const savedSession = sessionStorage.getItem('galaxyGateAuth') || localStorage.getItem('galaxyGateAuth');
+            if (savedSession) {
+                try {
+                    const user = JSON.parse(savedSession);
+                    unlockWebsite(user, false);
+                    return;
+                } catch (e) {
+                    lockWebsite();
+                }
+            }
+            lockWebsite();
+        }
+
+        // Khóa website, bắt buộc đăng nhập
+        function lockWebsite() {
+            document.body.classList.add('is-locked');
+            gateScreen.style.display = 'flex';
+            gateScreen.classList.remove('fade-out');
+            webAppMain.style.display = 'none';
+        }
+
+        // Mở khóa website khi đăng nhập thành công
+        function unlockWebsite(user, animate = true) {
+            userNameDisplay.innerText = user.username || 'Chỉ Huy';
+            
+            if (animate) {
+                gateScreen.classList.add('fade-out');
+                setTimeout(() => {
+                    gateScreen.style.display = 'none';
+                    webAppMain.style.display = 'block';
+                    document.body.classList.remove('is-locked');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 500);
+            } else {
+                gateScreen.style.display = 'none';
+                webAppMain.style.display = 'block';
+                document.body.classList.remove('is-locked');
+            }
+        }
+
+        // Xử lý gửi biểu mẫu đăng nhập
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            const username = document.getElementById('usernameInput').value.trim();
+            const password = document.getElementById('passwordInput').value.trim();
+            const rememberMe = document.getElementById('rememberMeCheckbox').checked;
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (!username || !password) {
+                showAlert('Vui lòng điền đầy đủ tên đăng nhập và mật khẩu!', 'error');
+                return;
+            }
+
+            // Hiệu ứng đang quét cổng xác thực
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ĐANG XÁC THỰC DANH TÍNH...`;
+
+            setTimeout(() => {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = `
+                    <span class="btn-text">XÁC THỰC & MỞ KHÓA WEB</span>
+                    <span class="btn-flare"></span>
+                    <i class="fa-solid fa-door-open"></i>
+                `;
+
+                const user = {
+                    username: username,
+                    loginTime: new Date().toLocaleTimeString()
+                };
+
+                // Lưu trạng thái đăng nhập
+                if (rememberMe) {
+                    localStorage.setItem('galaxyGateAuth', JSON.stringify(user));
+                } else {
+                    sessionStorage.setItem('galaxyGateAuth', JSON.stringify(user));
+                    localStorage.removeItem('galaxyGateAuth');
+                }
+
+                showAlert(`Xác thực thành công! Đang giải mã cổng vào hệ thống...`, 'success');
+
+                setTimeout(() => {
+                    unlockWebsite(user, true);
+                }, 800);
+
+            }, 800);
+        }
+
+        // Điền nhanh tài khoản mẫu
+        function autofillDemo() {
+            document.getElementById('usernameInput').value = 'CosmicCommander';
+            document.getElementById('passwordInput').value = 'Galaxy2026@Pass';
+            showAlert('Đã nạp thông tin tài khoản mẫu! Nhấn MỞ KHÓA để truy cập.', 'info');
+        }
+
+        function showAlert(msg, type = 'success') {
+            const alertBox = document.getElementById('loginAlert');
+            alertBox.style.display = 'flex';
+            alertBox.className = `alert-box alert-${type} fade-in`;
+            alertBox.innerHTML = `
+                <i class="fa-solid ${type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-info')}"></i>
+                <span>${msg}</span>
+            `;
+        }
+
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('eyeIcon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Xử lý Đăng xuất -> Ngay lập tức khóa web
+        function handleLogout() {
+            localStorage.removeItem('galaxyGateAuth');
+            sessionStorage.removeItem('galaxyGateAuth');
+            localStorage.removeItem('galaxySessionUser');
+            document.getElementById('galaxyLoginForm').reset();
+            const alertBox = document.getElementById('loginAlert');
+            if (alertBox) alertBox.style.display = 'none';
+            lockWebsite();
+        }
+
+        /* ========================================================
+           3. CHỨC NĂNG CHUYỂN ĐỔI TAB (VỀ TÔI & PLAYLIST)
+           ======================================================== */
+        function openTab(evt, tabName) {
+            const tabcontent = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+
+            const tablinks = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+
+            const target = document.getElementById(tabName);
+            if (target) {
+                target.classList.add("active");
+            }
+
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add("active");
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* ========================================================
+           4. DỮ LIỆU & RENDER DANH SÁCH BÀI HÁT (PLAYLIST) VỚI FILE NHẠC & CHỮ CHẠY
+           ======================================================== */
+        const songs = [
+            {
+                id: 1,
+                title: "Liễu Thanh Yên - Jack (J97)",
+                // Đường dẫn file nhạc trong thư mục dự án (hoặc link mp3 online)
+                src: "music/lieu-thanh-yen.mp3",
+                lyrics: [
+                    "Thương má em hồng, mình ngóng trong bóng đêm",
+                    "Nước mắt lưng tròng, chờ mong day dứt thêm",
+                    "Mình vẫn còn yêu nhau, vậy mà đành xa cách",
+                    "Chuyện tình mình như lá, mây bay ngang trời",
+                    "Nỗi đau không lời, hận em suốt cuộc đời...",
+                    "Dẫu biết duyên tình này ngút ngàn cách trở",
+                    "Để lại mình ta ôm nỗi bơ vơ giữa trời sao."
+                ]
+            },
+            {
+                id: 2,
+                title: "Vũ Trụ Có Anh - Phương Mỹ Chi ft. DTAP",
+                src: "music/vu-tru-co-anh.mp3",
+                lyrics: [
+                    "Ta bay qua muôn vì sao, tìm nhau giữa ngân hà xa xôi...",
+                    "Gửi trọn tình này vào từng hạt bụi sao lấp lánh nơi chân trời.",
+                    "Dẫu vũ trụ bao la, ngàn năm trôi qua...",
+                    "Bóng hình người vẫn sáng mãi giữa muôn trùng tinh tú.",
+                    "Một vòng quỹ đạo, một đời tương tư."
+                ]
+            },
+            {
+                id: 3,
+                title: "Phi Hành Gia Khắc Khoải - Sound of Cosmos",
+                src: "music/sound-of-cosmos.mp3",
+                lyrics: [
+                    "Giữa tĩnh mịch vô tận của vũ trụ...",
+                    "Chỉ còn tiếng nhịp tim và giai điệu ký ức vang vọng.",
+                    "Mỗi vì sao là một niềm hy vọng chưa bao giờ tắt.",
+                    "Tín hiệu phát đi, hòa vào sóng không gian sâu thẳm...",
+                    "Hành trình cô đơn nhưng tràn đầy khát vọng vươn tới tự do."
+                ]
+            }
+        ];
+
+        let currentSongIndex = 0;
+        const audio = document.getElementById('galaxyAudio');
+        const playBtn = document.getElementById('playBtn');
+        const playIcon = document.getElementById('playIcon');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const curTimeEl = document.getElementById('curTime');
+        const durTimeEl = document.getElementById('durTime');
+        const seekBarWrapper = document.getElementById('seekBarWrapper');
+        const seekProgress = document.getElementById('seekProgress');
+        const volSlider = document.getElementById('volSlider');
+        const volIcon = document.getElementById('volIcon');
+
+        const playerPanel = document.getElementById('playerPanel');
+        const playlistBanner = document.getElementById('playlistBanner');
+        const songListContainer = document.getElementById('songList');
+        const lyricsDisplay = document.getElementById('lyricsDisplay');
+        const playingSongTitle = document.getElementById('playingSongTitle');
+        const songCountBadge = document.getElementById('songCountBadge');
+
+        // Định dạng thời gian mm:ss
+        function formatTime(seconds) {
+            if (isNaN(seconds) || seconds < 0) return "0:00";
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        // Tải thông tin và chuẩn bị bài hát
+        function loadSong(index, shouldPlay = false) {
+            currentSongIndex = index;
+            const song = songs[currentSongIndex];
+            if (!song) return;
+
+            // Gán file nhạc vào audio
+            audio.src = song.src;
+
+            // Cập nhật tiêu đề hiển thị (chữ chạy khi phát)
+            playingSongTitle.innerText = song.title;
+
+            // Cập nhật giao diện danh sách Playlist bên trái
+            const items = document.querySelectorAll('.song-item');
+            items.forEach((item, idx) => {
+                if (idx === currentSongIndex) {
+                    item.classList.add('active-song');
+                    const icon = item.querySelector('.play-icon');
+                    if (icon) icon.className = shouldPlay ? 'fa-solid fa-pause play-icon' : 'fa-solid fa-play play-icon';
+                } else {
+                    item.classList.remove('active-song');
+                    const icon = item.querySelector('.play-icon');
+                    if (icon) icon.className = 'fa-solid fa-play play-icon';
+                }
+            });
+
+            // Nạp các dòng chữ lời bài hát vào khung cuộn
+            lyricsDisplay.innerHTML = `
+                <div class="lyrics-content" id="lyricsContent">
+                    ${song.lyrics.map((line, idx) => `<p class="lyric-line" id="lyric-${idx}">${line}</p>`).join('')}
+                </div>
+            `;
+
+            if (shouldPlay) {
+                audio.play().catch(err => {
+                    console.log("Chưa thể phát nhạc tự động hoặc chưa tìm thấy file mp3:", err);
+                });
+            }
+        }
+
+        // Bật / Dừng nhạc
+        function togglePlay() {
+            if (!audio.src || audio.src === window.location.href) {
+                loadSong(currentSongIndex, true);
+                return;
+            }
+            if (audio.paused) {
+                audio.play().catch(err => {
+                    alert("Không thể phát file nhạc. Hãy đảm bảo bạn đã đặt file .mp3 vào thư mục dự án!");
+                });
+            } else {
+                audio.pause();
+            }
+        }
+
+        playBtn.addEventListener('click', togglePlay);
+
+        prevBtn.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            loadSong(currentSongIndex, true);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            loadSong(currentSongIndex, true);
+        });
+
+        // Xử lý sự kiện khi nhạc PHÁT -> KÍCH HOẠT CHỮ CHẠY VÀ SÓNG ÂM
+        audio.addEventListener('play', () => {
+            playIcon.className = 'fa-solid fa-pause';
+            playerPanel.classList.add('is-playing');
+            playlistBanner.classList.add('is-playing');
+
+            const activeItemIcon = document.querySelector('.active-song .play-icon');
+            if (activeItemIcon) activeItemIcon.className = 'fa-solid fa-pause play-icon';
+        });
+
+        // Xử lý sự kiện khi nhạc TẠM DỪNG -> DỪNG CHỮ VÀ SÓNG ÂM
+        audio.addEventListener('pause', () => {
+            playIcon.className = 'fa-solid fa-play';
+            playerPanel.classList.remove('is-playing');
+            playlistBanner.classList.remove('is-playing');
+
+            const activeItemIcon = document.querySelector('.active-song .play-icon');
+            if (activeItemIcon) activeItemIcon.className = 'fa-solid fa-play play-icon';
+        });
+
+        // Cập nhật tiến trình & ĐỒNG BỘ CHỮ CHẠY/CUỘN THEO BÀI HÁT
+        audio.addEventListener('timeupdate', () => {
+            const current = audio.currentTime;
+            const duration = audio.duration;
+
+            curTimeEl.innerText = formatTime(current);
+
+            if (duration && !isNaN(duration)) {
+                durTimeEl.innerText = formatTime(duration);
+                const percent = (current / duration) * 100;
+                seekProgress.style.width = percent + '%';
+
+                // TỰ ĐỘNG CUỘN VÀ SÁNG DÒNG CHỮ THEO TIẾN TRÌNH NHẠC
+                const song = songs[currentSongIndex];
+                if (song && song.lyrics && song.lyrics.length > 0) {
+                    const totalLines = song.lyrics.length;
+                    const lineIndex = Math.min(Math.floor((current / duration) * totalLines), totalLines - 1);
+
+                    document.querySelectorAll('.lyric-line').forEach((el, idx) => {
+                        if (idx === lineIndex) {
+                            if (!el.classList.contains('active')) {
+                                el.classList.add('active');
+                                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        } else {
+                            el.classList.remove('active');
+                        }
+                    });
+                }
+            }
+        });
+
+        // Khi nạp xong thông tin độ dài bài hát
+        audio.addEventListener('loadedmetadata', () => {
+            durTimeEl.innerText = formatTime(audio.duration);
+        });
+
+        // Tự động chuyển bài khi hết nhạc
+        audio.addEventListener('ended', () => {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            loadSong(currentSongIndex, true);
+        });
+
+        // Tua bài hát khi click vào thanh tiến trình
+        seekBarWrapper.addEventListener('click', (e) => {
+            const rect = seekBarWrapper.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const width = rect.width;
+            if (audio.duration) {
+                audio.currentTime = (clickX / width) * audio.duration;
+            }
+        });
+
+        // Điều chỉnh âm lượng
+        volSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            audio.volume = val;
+            if (val === 0) {
+                volIcon.className = 'fa-solid fa-volume-xmark';
+            } else if (val < 0.5) {
+                volIcon.className = 'fa-solid fa-volume-low';
+            } else {
+                volIcon.className = 'fa-solid fa-volume-high';
+            }
+        });
+
+        // Render danh sách Playlist ban đầu
+        function renderSongs() {
+            songListContainer.innerHTML = '';
+            if (songCountBadge) songCountBadge.innerText = `${songs.length} bài`;
+
+            songs.forEach((song, idx) => {
+                const div = document.createElement('div');
+                div.className = 'song-item' + (idx === 0 ? ' active-song' : '');
+                div.innerHTML = `
+                    <div class="song-meta">
+                        <span class="track-number">0${idx + 1}</span>
+                        <div class="song-info">
+                            <span class="song-name">${song.title}</span>
+                            <span class="song-sub">Stereo • Hi-Fi Cosmic</span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-play play-icon"></i>
+                `;
+                
+                div.onclick = function() {
+                    if (currentSongIndex === idx) {
+                        togglePlay();
+                    } else {
+                        loadSong(idx, true);
+                    }
+                };
+                
+                songListContainer.appendChild(div);
+            });
+
+            // Nạp bài đầu tiên
+            loadSong(0, false);
+        }
+
+        renderSongs();
+
+        // Kiểm tra bảo mật ngay khi tải trang
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+        });
+    </script>
+</body>
+</html>
